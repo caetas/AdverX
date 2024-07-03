@@ -264,7 +264,7 @@ class AdverX(nn.Module):
         self.recon_weight = args.recon_weight
         self.n_epochs = args.n_epochs
         self.sample_and_save_frequency = args.sample_and_save_frequency
-        self.dataset = args.dataset
+        self.dataset = 'Covid'
         self.loss_type = args.loss_type
         self.kld_weight = args.kld_weight
 
