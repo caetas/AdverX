@@ -1,5 +1,4 @@
 from data.Dataloader import train_loader
-from config import data_processed_dir
 from models.AdverX import AdverX
 from utils.util import parse_args_AdverX
 import wandb
