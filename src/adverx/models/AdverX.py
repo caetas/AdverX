@@ -469,7 +469,7 @@ class AdverX(nn.Module):
             return ssim + kld*self.kld_weight + self.recon_weight*discriminator_score
 
 
-    def outlier_detection(self, in_loader, out_loader, display = True, in_array = None, in_array_discriminator = None):
+    def outlier_detection(self, in_loader, out_loader, in_patches, out_patches, display = True, in_array = None):
         '''
         Function to test the outlier detection capabilities of the model
         Args:
@@ -480,63 +480,60 @@ class AdverX(nn.Module):
         in_array_discriminator: If not None, it will use this array of in-distribution discriminator scores instead of computing them
         Returns:
         in_scores: Array with the in-distribution scores
-        in_scores_discriminator: Array with the in-distribution discriminator scores
+        in_scores: Array with the in-distribution discriminator scores
         rocauc: ROC AUC score of the model
         rocauc_discriminator: ROC AUC score of the discriminator
         '''
         in_scores = []
-        in_scores_discriminator = []
         out_scores = []
-        out_scores_discriminator = []
-        if in_array is not None and in_array_discriminator is not None:
+        machine = []
+        if in_array is not None:
             in_scores = in_array
-            in_scores_discriminator = in_array_discriminator
         else:
-            for (imgs, _) in tqdm(in_loader, desc = 'In-distribution', leave=False):
-                in_scores_discriminator.append(self.discriminator(imgs.to(self.device)).detach().cpu().numpy())
-                recon_imgs, mu, logvar = self.vae(imgs.to(self.device))
-                in_scores.append(self.ood_score(recon_imgs, imgs.to(self.device), mu, logvar).detach().cpu().numpy())
+            for (imgs, _, _) in tqdm(in_loader, desc = 'In-distribution', leave=False):
+                in_scores.append(self.discriminator(imgs.to(self.device)).detach().cpu().numpy())
 
             in_scores = np.concatenate(in_scores)
-            in_scores_discriminator = np.concatenate(in_scores_discriminator)
-            in_scores_discriminator = -in_scores_discriminator + 1
+            in_scores = -in_scores + 1
+            in_scores = [in_scores[i*in_patches:(i+1)*in_patches].mean() for i in range(len(in_scores)//in_patches)]
 
-        for (imgs, _) in tqdm(out_loader, desc = 'Out-of-distribution', leave=False):
-            out_scores_discriminator.append(self.discriminator(imgs.to(self.device)).detach().cpu().numpy())
-            recon_imgs, mu, logvar = self.vae(imgs.to(self.device))
-            out_scores.append(self.ood_score(recon_imgs, imgs.to(self.device), mu, logvar).detach().cpu().numpy())
-
+        for (imgs, _, info) in tqdm(out_loader, desc = 'Out-of-distribution', leave=False):
+            out_scores.append(self.discriminator(imgs.to(self.device)).detach().cpu().numpy())
+            machine.append(info[:][0])
+        
+        machine = np.concatenate(machine)
         out_scores = np.concatenate(out_scores)
-        out_scores_discriminator = np.concatenate(out_scores_discriminator)
-        out_scores_discriminator = -out_scores_discriminator + 1
+        out_scores = -out_scores + 1
+        out_scores = [out_scores[i*out_patches:(i+1)*out_patches].mean() for i in range(len(out_scores)//out_patches)]
+        machine = [machine[i*out_patches] for i in range(len(machine)//out_patches)]
+
+        # print mean scores per machine
+        for m in np.unique(machine):
+            print(f"Mean Scores {m}: {np.mean([out_scores[i] for i in range(len(out_scores)) if machine[i] == m]):.6f}")
 
         rocauc = roc_auc_score(np.concatenate([np.zeros_like(in_scores), np.ones_like(out_scores)]), np.concatenate([in_scores, out_scores]))
-        rocauc_discriminator = roc_auc_score(np.concatenate([np.zeros_like(in_scores_discriminator), np.ones_like(out_scores_discriminator)]), np.concatenate([in_scores_discriminator, out_scores_discriminator]))
 
         fpr, tpr , _ = roc_curve(np.concatenate([np.zeros_like(in_scores), np.ones_like(out_scores)]), np.concatenate([in_scores, out_scores]))
-        fpr_discriminator, tpr_discriminator , _ = roc_curve(np.concatenate([np.zeros_like(in_scores_discriminator), np.ones_like(out_scores_discriminator)]), np.concatenate([in_scores_discriminator, out_scores_discriminator]))
 
         fpr95 = fpr[np.argmax(tpr >= 0.95)]
-        fpr95_discriminator = fpr_discriminator[np.argmax(tpr_discriminator >= 0.95)]
 
         if display:
             # print discriminator metrics
-            print(f"ROC AUC Discriminator: {rocauc_discriminator:.6f}, FPR95 Discriminator: {fpr95_discriminator:.6f}, Mean Scores Discriminator: {np.mean(out_scores_discriminator):.6f}, ROC AUC VAE: {rocauc:.6f}, FPR95 VAE: {fpr95:.6f}")
-            print(f"Mean Scores ID: {np.mean(in_scores_discriminator):.6f}")
+            print(f"Mean Scores: {np.mean(out_scores):.6f}, AUROC: {rocauc:.6f}, FPR95: {fpr95:.6f}")
+            print(f"Mean Scores ID: {np.mean(in_scores):.6f}")
             # plot the scores
-            fig, ax = plt.subplots(1, 2, figsize=(10, 5))
-            ax[0].hist(in_scores, bins=100, alpha=0.5, label='In-distribution')
-            ax[0].hist(out_scores, bins=100, alpha=0.5, label='Out-of-distribution')
-            ax[0].set_title('VAE Scores (ROC AUC: {:.4f})'.format(rocauc))
-            ax[0].legend()
-            ax[1].hist(in_scores_discriminator, bins=50, alpha=0.5, label='In-distribution')
-            ax[1].hist(out_scores_discriminator, bins=50, alpha=0.5, label='Out-of-distribution')
-            ax[1].set_title('Discriminator Scores (ROC AUC: {:.4f})'.format(rocauc_discriminator))
-            ax[1].legend()
+            fig = plt.figure(figsize=(10, 5))
+            plt.hist(in_scores, bins=50, alpha=0.5, label='In-distribution')
+            plt.hist(out_scores, bins=50, alpha=0.5, label='Out-of-distribution')
+            #plot the out_scores per machine
+            #for m in np.unique(machine):
+            #    plt.hist([out_scores[i] for i in range(len(out_scores)) if machine[i] == m], bins=50, alpha=0.5, label=f'{m}')
+            plt.title('Discriminator Scores (ROC AUC: {:.4f})'.format(rocauc))
+            plt.legend()
             plt.show()
         
         else:
-            return in_scores, in_scores_discriminator, rocauc, rocauc_discriminator, fpr95_discriminator, np.mean(out_scores_discriminator)
+            return in_scores, rocauc, np.mean(out_scores)
         
 
 class MSSIM(nn.Module):

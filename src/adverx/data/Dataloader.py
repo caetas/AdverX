@@ -18,6 +18,8 @@ class CovidDataset(Dataset):
         self.in_dist_images = glob(os.path.join(self.data_dir, 'SIEMENS SIEMENS FD-X','*','*.png'))
         self.out_dist_images = glob(os.path.join(self.data_dir, '*','*','*.png'))
         self.out_dist_images = [img for img in self.out_dist_images if 'SIEMENS SIEMENS FD-X' not in img]
+        np.random.shuffle(self.out_dist_images)
+        self.out_dist_images = self.out_dist_images[:len(self.in_dist_images)]
         # generate a sequence of indices with the same length as the number of images that has a fixed seed
         np.random.seed(0)
         self.indices = np.random.permutation(len(self.in_dist_images))
@@ -30,6 +32,13 @@ class CovidDataset(Dataset):
         if train:
             for idx in tqdm(train_indices, desc='Loading data', leave=False):
                 #break img str
+                if '/' in self.in_dist_images[idx]:
+                    global_str = self.in_dist_images[idx][:-4].split('/')
+                elif '\\' in self.in_dist_images[idx]:
+                    global_str = self.in_dist_images[idx][:-4].split('\\')
+
+                machine = global_str[-3]
+                patient = global_str[-2]
                 #remove .png and split by _
                 img_str = self.in_dist_images[idx][:-4].split('_')
                 modality = img_str[0][-2:]
@@ -45,14 +54,21 @@ class CovidDataset(Dataset):
                 img = img * 2 - 1
                 for i in range(self.patches_image):
                     # get 8 random patches of size 128x128
-                    x = np.random.randint(0, img.shape[0] - 128)
-                    y = np.random.randint(0, img.shape[1] - 128)
+                    # ignore 10% of each border to avoid black borders
+                    x = np.random.randint(int(0.2*img.shape[0]), int(0.8*img.shape[0]) - 128)
+                    y = np.random.randint(int(0.2*img.shape[1]), int(0.8*img.shape[1]) - 128)
                     patch = img[x:x+128, y:y+128]
                     self.dataset.append(torch.tensor(patch).float().unsqueeze(0))
-                    self.info.append((modality, monochrome))
+                    self.info.append((machine, patient, modality, monochrome))
         else:
             if in_dist:
-                for idx in test_indices:
+                for idx in tqdm(test_indices, desc='Loading data', leave=False):
+                    if '/' in self.in_dist_images[idx]:
+                        global_str = self.in_dist_images[idx][:-4].split('/')
+                    elif '\\' in self.in_dist_images[idx]:
+                        global_str = self.in_dist_images[idx][:-4].split('\\')
+                    machine = global_str[-3]
+                    patient = global_str[-2]
                     img_str = self.in_dist_images[idx][:-4].split('_')
                     modality = img_str[0][-2:]
                     monochrome = img_str[1]
@@ -67,16 +83,26 @@ class CovidDataset(Dataset):
                     img = img * 2 - 1
                     for i in range(self.patches_image):
                         # get 8 random patches of size 128x128
-                        x = np.random.randint(0, img.shape[0] - 128)
-                        y = np.random.randint(0, img.shape[1] - 128)
+                        x = np.random.randint(int(0.2*img.shape[0]), int(0.8*img.shape[0]) - 128)
+                        y = np.random.randint(int(0.2*img.shape[1]), int(0.8*img.shape[1]) - 128)
                         patch = img[x:x+128, y:y+128]
                         self.dataset.append(torch.tensor(patch).float().unsqueeze(0))
-                        self.info.append((modality, monochrome))
+                        self.info.append((machine, patient, modality, monochrome))
             else:
-                for img in self.out_dist_images:
+                for img in tqdm(self.out_dist_images, desc='Loading data', leave=False):
+                    if '/' in img:
+                        global_str = img[:-4].split('/')
+                    elif '\\' in img:
+                        global_str = img[:-4].split('\\')
+                    machine = global_str[-3]
+                    patient = global_str[-2]
+                    img_str = img[:-4].split('_')
                     modality = img_str[0][-2:]
                     monochrome = img_str[1]
                     img = cv2.imread(img, cv2.IMREAD_UNCHANGED)
+
+                    if len(img.shape) == 3:
+                        continue
                     # convert to float32
                     img = img.astype(np.float32)
                     # divide by 2**12 - 1
@@ -88,11 +114,11 @@ class CovidDataset(Dataset):
                     img = img * 2 - 1
                     for i in range(self.patches_image):
                         # get 8 random patches of size 128x128
-                        x = np.random.randint(0, img.shape[0] - 128)
-                        y = np.random.randint(0, img.shape[1] - 128)
+                        x = np.random.randint(int(0.2*img.shape[0]), int(0.8*img.shape[0]) - 128)
+                        y = np.random.randint(int(0.2*img.shape[1]), int(0.8*img.shape[1]) - 128)
                         patch = img[x:x+128, y:y+128]
                         self.dataset.append(torch.tensor(patch).float().unsqueeze(0))
-                        self.info.append((modality, monochrome))
+                        self.info.append((machine, patient, modality, monochrome))
 
     def __len__(self):
         return len(self.dataset)
@@ -110,4 +136,4 @@ def train_loader(batch_size, patches_image=8, split=0.7):
     return DataLoader(CovidDataset(data_processed_dir, patches_image=patches_image, train=True, in_dist=True, split=split), batch_size=batch_size, shuffle=True)
 
 def test_loader(batch_size, in_dist, patches_image=8, split=0.7):
-    return DataLoader(CovidDataset(data_processed_dir, patches_image=patches_image, train=False, in_dist=in_dist, split=split), batch_size=batch_size, shuffle=True)
+    return DataLoader(CovidDataset(data_processed_dir, patches_image=patches_image, train=False, in_dist=in_dist, split=split), batch_size=batch_size, shuffle=False)
