@@ -15,8 +15,11 @@ def parse_args_AdverX():
     argparser.add_argument('--discriminator_checkpoint', type=str, default=None, help='discriminator checkpoint path')
     argparser.add_argument('--kld_weight', type=float, default=1e-4, help='kl weight')
     argparser.add_argument('--loss_type', type=str, default='mse', help='loss type', choices=['mse', 'ssim'])
-    argparser.add_argument('--patches_image', type=int, default=32, help='number of patches per image')
+    argparser.add_argument('--patches_image', type=int, default=32, help='number of patches per image for training')
     argparser.add_argument('--split', type=float, default=0.7, help='train-test split for the ID dataset')
+    argparser.add_argument('--in_machine', type=str, default='siemens', help='in-distribution machine', choices=['siemens', 'ge', 'philips', 'gmm', 'konica'])
+    argparser.add_argument('--in_patches', type=int, default=8, help='number of patches per image for in-distribution evaluation')
+    argparser.add_argument('--out_patches', type=int, default=2, help='number of patches per image for out-of-distribution evaluation')
     return argparser.parse_args()
 
 # EOF

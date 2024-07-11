@@ -52,12 +52,23 @@ for sub in tqdm(sub_folders, desc='Processing subfolders', total=len(sub_folders
                             data = json.load(f)
                         # check if key 00081090 exists
                         if '00081090' not in data:
-                            machine_dir = os.path.join(dest_dir, data['00080070']['Value'][0])
+                            if data['00080070']['Value'][0] == 'Philips DigitalDiagnost':
+                                machine_dir = os.path.join(dest_dir, 'Philips Medical Systems DigitalDiagnost')
+                            elif data['00080070']['Value'][0] == 'FUJI PHOTO FILM Co., ltd. 5000MA':
+                                machine_dir = os.path.join(dest_dir, 'FUJIFILM Corporation')
+                            else:
+                                machine_dir = os.path.join(dest_dir, data['00080070']['Value'][0])
                         else:
                             #if they contain "" remove them
                             data['00080070']['Value'][0] = data['00080070']['Value'][0].replace('"','')
                             data['00081090']['Value'][0] = data['00081090']['Value'][0].replace('"','')
-                            machine_dir = os.path.join(dest_dir, data['00080070']['Value'][0] + ' ' +data['00081090']['Value'][0])
+                            
+                            if data['00080070']['Value'][0] + ' ' +data['00081090']['Value'][0] == 'Philips DigitalDiagnost':
+                                machine_dir = os.path.join(dest_dir, 'Philips Medical Systems DigitalDiagnost')
+                            elif data['00080070']['Value'][0] + ' ' +data['00081090']['Value'][0] == 'FUJI PHOTO FILM Co., ltd. 5000MA':
+                                machine_dir = os.path.join(dest_dir, 'FUJIFILM Corporation')
+                            else:
+                                machine_dir = os.path.join(dest_dir, data['00080070']['Value'][0] + ' ' +data['00081090']['Value'][0])
                         if not os.path.exists(machine_dir):
                             os.makedirs(machine_dir)
                         

@@ -18,9 +18,11 @@ wandb.init(project='AdverX',
                'kld_weight': args.kld_weight,
                'loss_type': args.loss_type,
                'patches_image': args.patches_image,
-               'split': args.split  
-           })
-loader = train_loader(args.batch_size, args.patches_image, args.split)
+               'split': args.split,
+               'in_machine': args.in_machine  
+           },
+           name=f"AdverX_{args.in_machine}")
+loader = train_loader(args.batch_size, args.patches_image, args.split, args.in_machine)
 model = AdverX(128,1,args)
 model.train_model(loader)
 wandb.finish()

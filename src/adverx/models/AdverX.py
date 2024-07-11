@@ -267,6 +267,7 @@ class AdverX(nn.Module):
         self.dataset = 'Covid'
         self.loss_type = args.loss_type
         self.kld_weight = args.kld_weight
+        self.in_machine = args.in_machine
 
     def forward(self, x):
         '''
@@ -431,12 +432,12 @@ class AdverX(nn.Module):
             if (epoch+1) % self.sample_and_save_frequency == 0 or epoch == 0:
                 self.create_grid(title=f"Epoch {epoch}", train=True)
                 self.create_validation_grid(data_loader, title=f"Epoch {epoch}", train=True)
-                torch.save(self.discriminator.state_dict(), os.path.join(models_dir, 'AdverX', f"Discriminator_{self.dataset}_{epoch}.pt"))
+                torch.save(self.discriminator.state_dict(), os.path.join(models_dir, 'AdverX', f"Discriminator_{self.in_machine}_{epoch}.pt"))
         
             if acc_g_loss/len(data_loader.dataset) < best_loss:
                 best_loss = acc_g_loss/len(data_loader.dataset)
-                torch.save(self.vae.state_dict(), os.path.join(models_dir, 'AdverX', f"AdvVAE_{self.dataset}.pt"))
-                torch.save(self.discriminator.state_dict(), os.path.join(models_dir, 'AdverX', f"Discriminator_{self.dataset}.pt"))
+                torch.save(self.vae.state_dict(), os.path.join(models_dir, 'AdverX', f"AdvVAE_{self.in_machine}.pt"))
+                torch.save(self.discriminator.state_dict(), os.path.join(models_dir, 'AdverX', f"Discriminator_{self.in_machine}.pt"))
 
     def ood_score(self, recon_x, x, mu, logvar):
         '''

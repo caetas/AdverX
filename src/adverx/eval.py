@@ -9,6 +9,7 @@ if args.checkpoint is not None:
     model.vae.load_state_dict(torch.load(args.checkpoint))
 if args.discriminator_checkpoint is not None:
     model.discriminator.load_state_dict(torch.load(args.discriminator_checkpoint))
-in_loader = test_loader(args.batch_size, True, 8, args.split)
-out_loader = test_loader(args.batch_size, False, 2, args.split)
-model.outlier_detection(in_loader, out_loader, 8, 4)
+
+in_loader = test_loader(args.batch_size, True, args.in_patches, args.split, args.in_machine)
+out_loader = test_loader(args.batch_size, False, args.out_patches, args.split, args.in_machine)
+model.outlier_detection(in_loader, out_loader, args.in_patches, args.out_patches)
