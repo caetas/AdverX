@@ -97,10 +97,17 @@ class CovidDataset(Dataset):
                 modality = img_str[0][-2:]
                 monochrome = img_str[1]
                 img = cv2.imread(self.in_dist_images[idx], cv2.IMREAD_UNCHANGED)
+                if np.max(img) > 2**12 - 1:
+                    if np.max(img) > 2**14 - 1:
+                        rescale_factor = 2**16 - 1
+                    else:
+                        rescale_factor = 2**14 - 1
+                else:
+                    rescale_factor = 2**12 - 1
                 # convert to float32
                 img = img.astype(np.float32)
                 # divide by 2**12 - 1
-                img = img / (2**12 - 1)
+                img = img / rescale_factor
                 if monochrome == 'MONOCHROME1':
                     img = 1.0 - img
                 # normalize to [-1, 1]
@@ -126,10 +133,17 @@ class CovidDataset(Dataset):
                     modality = img_str[0][-2:]
                     monochrome = img_str[1]
                     img = cv2.imread(self.in_dist_images[idx], cv2.IMREAD_UNCHANGED)
+                    if np.max(img) > 2**12 - 1:
+                        if np.max(img) > 2**14 - 1:
+                            rescale_factor = 2**16 - 1
+                        else:
+                            rescale_factor = 2**14 - 1
+                    else:
+                        rescale_factor = 2**12 - 1
                     # convert to float32
                     img = img.astype(np.float32)
                     # divide by 2**12 - 1
-                    img = img / (2**12 - 1)
+                    img = img / rescale_factor
                     if monochrome == 'MONOCHROME1':
                         img = 1.0 - img
                     # normalize to [-1, 1]
@@ -156,10 +170,17 @@ class CovidDataset(Dataset):
 
                     if len(img.shape) == 3:
                         continue
+                    if np.max(img) > 2**12 - 1:
+                        if np.max(img) > 2**14 - 1:
+                            rescale_factor = 2**16 - 1
+                        else:
+                            rescale_factor = 2**14 - 1
+                    else:
+                        rescale_factor = 2**12 - 1
                     # convert to float32
                     img = img.astype(np.float32)
                     # divide by 2**12 - 1
-                    img = img / (2**12 - 1)
+                    img = img / rescale_factor
 
                     if monochrome == 'MONOCHROME1':
                         img = 1.0 - img
