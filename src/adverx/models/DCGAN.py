@@ -313,7 +313,7 @@ class DCGAN(nn.Module):
         self.sample_and_save_freq = args.sample_and_save_freq
         self.generator.apply(weights_init_normal)
         self.discriminator.apply(weights_init_normal)
-        self.dataset = args.dataset
+        self.dataset = "Covid"
         self.in_machine = args.in_machine
     
     def train_model(self, dataloader):
@@ -411,4 +411,4 @@ class DCGAN(nn.Module):
                 plt.axis('off')
                 wandb.log({"Generated Images": fig})
                 plt.close(fig)
-                torch.save(self.discriminator.state_dict(), os.path.join(models_dir, 'VanillaGAN', f"VanDisc_{self.in_machine}_{epoch}.pt"))
+                torch.save(self.discriminator.state_dict(), os.path.join(models_dir, 'DCGAN', f"VanDisc_{self.in_machine}_{epoch}.pt"))
