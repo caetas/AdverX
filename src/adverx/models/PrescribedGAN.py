@@ -317,7 +317,7 @@ class PresGAN(nn.Module):
         self.flag_adapt = args.flag_adapt
         self.hmc_learning_rate = args.hmc_learning_rate
         self.hmc_opt_accept = args.hmc_opt_accept
-        self.dataset = args.dataset
+        self.dataset = 'COVID-19'
         self.sample_and_save_freq = args.sample_and_save_freq
         self.in_machine = args.in_machine
     

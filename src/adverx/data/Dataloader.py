@@ -44,7 +44,7 @@ def out_dist_list(in_dist_machine, siemens_images, philips_images, konica_images
     return out_dist_images
 
 class CovidDataset(Dataset):
-    def __init__(self, root, patches_image=8, train=False, in_dist=False, split=0.7, in_dist_machine='siemens'):
+    def __init__(self, root, patches_image=8, train=False, in_dist=False, split=0.7, in_dist_machine='siemens', normalize = True):
         self.root = root
         self.data_dir = os.path.join(root, 'BIMCV-COVID19-processed')
         self.patches_image = patches_image 
@@ -111,7 +111,9 @@ class CovidDataset(Dataset):
                 if monochrome == 'MONOCHROME1':
                     img = 1.0 - img
                 # normalize to [-1, 1]
-                img = img * 2 - 1
+                if normalize:
+                    img = img * 2 - 1
+
                 for i in range(self.patches_image):
                     # get 8 random patches of size 128x128
                     # ignore 10% of each border to avoid black borders
@@ -147,7 +149,8 @@ class CovidDataset(Dataset):
                     if monochrome == 'MONOCHROME1':
                         img = 1.0 - img
                     # normalize to [-1, 1]
-                    img = img * 2 - 1
+                    if normalize:
+                        img = img * 2 - 1
                     for i in range(self.patches_image):
                         # get 8 random patches of size 128x128
                         x = np.random.randint(int(0.2*img.shape[0]), int(0.8*img.shape[0]) - 128)
@@ -185,7 +188,9 @@ class CovidDataset(Dataset):
                     if monochrome == 'MONOCHROME1':
                         img = 1.0 - img
                     # normalize to [-1, 1]
-                    img = img * 2 - 1
+                    if normalize:
+                        img = img * 2 - 1
+                        
                     for i in range(self.patches_image):
                         # get 8 random patches of size 128x128
                         x = np.random.randint(int(0.2*img.shape[0]), int(0.8*img.shape[0]) - 128)
@@ -206,8 +211,8 @@ class CovidDataset(Dataset):
             else:
                 return self.dataset[idx], 1, self.info[idx]
             
-def train_loader(batch_size, patches_image=8, split=0.7, in_dist_machine='siemens'):
-    return DataLoader(CovidDataset(data_processed_dir, patches_image=patches_image, train=True, in_dist=True, split=split, in_dist_machine=in_dist_machine), batch_size=batch_size, shuffle=True)
+def train_loader(batch_size, patches_image=8, split=0.7, in_dist_machine='siemens', normalize = True):
+    return DataLoader(CovidDataset(data_processed_dir, patches_image=patches_image, train=True, in_dist=True, split=split, in_dist_machine=in_dist_machine, normalize=normalize), batch_size=batch_size, shuffle=True)
 
-def test_loader(batch_size, in_dist, patches_image=8, split=0.7, in_dist_machine='siemens'):
-    return DataLoader(CovidDataset(data_processed_dir, patches_image=patches_image, train=False, in_dist=in_dist, split=split, in_dist_machine=in_dist_machine), batch_size=batch_size, shuffle=False)
+def test_loader(batch_size, in_dist, patches_image=8, split=0.7, in_dist_machine='siemens', normalize = True):
+    return DataLoader(CovidDataset(data_processed_dir, patches_image=patches_image, train=False, in_dist=in_dist, split=split, in_dist_machine=in_dist_machine, normalize=normalize), batch_size=batch_size, shuffle=False)
