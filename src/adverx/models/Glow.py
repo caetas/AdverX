@@ -727,7 +727,7 @@ class Glow(nn.Module):
                 m.inited = True
     
     def preprocess(self, x):
-        x = x * 255  # undo ToTensor scaling to [0,1]
+        x = x * (2**self.n_bits -1)  # undo ToTensor scaling to [0,1]
 
         n_bins = 2 ** self.n_bits
         if self.n_bits < 8:
