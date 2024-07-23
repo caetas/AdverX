@@ -30,3 +30,4 @@ wandb.init(project='GLOW',
 loader = train_loader(args.batch_size, args.patches_image, args.split, args.in_machine, normalize = False)
 model = Glow(image_shape        =   (128,128,1), hidden_channels    =   args.hidden_channels, args=args)
 model.train_model(loader, args)
+wandb.finish()
