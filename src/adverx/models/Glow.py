@@ -794,19 +794,19 @@ class Glow(nn.Module):
         plt.close(fig)
 
     @torch.no_grad()
-    def outlier_detection(self, in_loader, out_loader):
+    def outlier_detection(self, in_loader, out_loader, in_patches, out_patches):
 
         in_scores = []
         out_scores = []
 
-        for x, _ in tqdm(in_loader, desc="In-distribution"):
+        for x, _, _ in tqdm(in_loader, desc="In-distribution"):
             x = self.preprocess(x)
             x = x.to(self.device)
             z, nll, y_logits = self.forward(x, None)
             losses = compute_loss(nll, reduction="none")
             in_scores.extend(losses["nll"].detach().cpu().numpy())
 
-        for x, _ in tqdm(out_loader, desc="Out-of-distribution"):
+        for x, _, _ in tqdm(out_loader, desc="Out-of-distribution"):
             x = self.preprocess(x)
             x = x.to(self.device)
             z, nll, y_logits = self.forward(x, None)
@@ -815,7 +815,9 @@ class Glow(nn.Module):
         
         # get auc
         in_scores = np.array(in_scores)
+        in_scores = [in_scores[i*in_patches:(i+1)*in_patches].mean() for i in range(len(in_scores)//in_patches)]
         out_scores = np.array(out_scores)
+        out_scores = [out_scores[i*out_patches:(i+1)*out_patches].mean() for i in range(len(out_scores)//out_patches)]
         in_labels = np.zeros_like(in_scores)
         out_labels = np.ones_like(out_scores)
         scores = np.concatenate([in_scores, out_scores])

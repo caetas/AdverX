@@ -229,7 +229,7 @@ class Discriminator(nn.Module):
         return x
     
     @torch.no_grad()
-    def outlier_detection(self, in_loader, out_loader, device, in_array=None, display=True):
+    def outlier_detection(self, in_loader, out_loader, in_patches, out_patches, in_array=None, display=True):
         '''
         Detect outliers using the discriminator
         :param in_loader: dataloader for in-distribution data
@@ -243,6 +243,8 @@ class Discriminator(nn.Module):
         in_preds = []
         out_preds = []
 
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
         if in_array is None:
             for (imgs, _,_) in tqdm(in_loader, desc='In-distribution', leave=False):
                 imgs = imgs.to(device)
@@ -254,6 +256,8 @@ class Discriminator(nn.Module):
                     in_preds.append(preds[:,0])
             in_array = np.concatenate(in_preds)
             in_array = -in_array + 1
+
+            in_array = [in_array[i*in_patches:(i+1)*in_patches].mean() for i in range(in_array.shape[0]//in_patches)]
 
         else:
             in_preds = in_array
@@ -270,7 +274,8 @@ class Discriminator(nn.Module):
         out_array = np.concatenate(out_preds)
 
         out_array = -out_array + 1
-        labels = np.concatenate([np.zeros(in_array.shape[0]), np.ones(out_array.shape[0])])
+        out_array = [out_array[i*out_patches:(i+1)*out_patches].mean() for i in range(out_array.shape[0]//out_patches)]
+        labels = np.concatenate([np.zeros_like(in_array), np.ones_like(out_array)])
 
 
         # calculate auroc
