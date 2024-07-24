@@ -510,6 +510,7 @@ class AdverX(nn.Module):
 
         # print mean scores per machine
         for m in np.unique(machine):
+            continue
             print(f"Mean Scores {m}: {np.mean([out_scores[i] for i in range(len(out_scores)) if machine[i] == m]):.6f}")
 
         rocauc = roc_auc_score(np.concatenate([np.zeros_like(in_scores), np.ones_like(out_scores)]), np.concatenate([in_scores, out_scores]))

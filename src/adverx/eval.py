@@ -8,6 +8,7 @@ model = AdverX(128,1,args)
 if args.checkpoint is not None:
     model.vae.load_state_dict(torch.load(args.checkpoint))
 if args.discriminator_checkpoint is not None:
+    print(f"Loading discriminator checkpoint from {args.discriminator_checkpoint}")
     model.discriminator.load_state_dict(torch.load(args.discriminator_checkpoint))
 
 fpr95s = []

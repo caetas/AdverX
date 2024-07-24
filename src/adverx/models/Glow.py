@@ -835,6 +835,7 @@ class Glow(nn.Module):
         fpr95 = fpr[np.argmax(tpr >= 0.95)]
         # print mean scores per machine
         for m in np.unique(machine):
+            continue
             print(f"Mean Scores {m}: {np.mean([out_scores[i] for i in range(len(out_scores)) if machine[i] == m]):.6f}")
         # print with 4 decimal places
         print(f"AUC: {auc:.4f}, FPR95: {fpr95:.4f}")

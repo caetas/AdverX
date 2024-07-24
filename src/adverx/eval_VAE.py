@@ -7,6 +7,7 @@ args = parse_args_VAE()
 model = VAE(128,1,args)
 
 if args.checkpoint is not None:
+    print(f"Loading checkpoint from {args.checkpoint}")
     model.load_state_dict(torch.load(args.checkpoint))
 
 fpr95s = []

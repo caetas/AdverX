@@ -373,7 +373,8 @@ class VAE(nn.Module):
         machine = [machine[i*out_patches] for i in range(len(machine)//out_patches)]
 
         for m in np.unique(machine):
-            print(f"Mean Scores {m}: {np.mean([out_scores[i] for i in range(len(out_scores)) if machine[i] == m]):.6f}")
+            #print(f"Mean Scores {m}: {np.mean([out_scores[i] for i in range(len(out_scores)) if machine[i] == m]):.6f}")
+            continue
 
         # compute AUROC
         y_true = np.concatenate([np.zeros_like(in_scores), np.ones_like(out_scores)])
