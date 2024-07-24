@@ -58,7 +58,6 @@ class CovidDataset(Dataset):
         self.gmm_images = glob(os.path.join(self.data_dir, 'GMM ACCORD DR','*','*.png'))
         self.out_dist_images = out_dist_list(in_dist_machine, self.siemens_images, self.philips_images, self.konica_images, self.ge_images, self.gmm_images, self.data_dir, split)
         np.random.shuffle(self.out_dist_images)
-        self.out_dist_images = self.out_dist_images[:len(self.siemens_images)]
 
         np.random.seed(0)
 
@@ -82,6 +81,7 @@ class CovidDataset(Dataset):
         self.info = []
         # make seed random again
         np.random.seed(None)
+        self.out_dist_images = self.out_dist_images[:len(test_indices)]
         if train:
             for idx in tqdm(train_indices, desc='Loading data', leave=False):
                 #break img str

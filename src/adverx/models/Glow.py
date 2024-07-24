@@ -13,7 +13,7 @@ import wandb
 import numpy as np
 import os
 from config import models_dir
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_auc_score, roc_curve
 
 
 def compute_same_pad(kernel_size, stride):
@@ -794,10 +794,11 @@ class Glow(nn.Module):
         plt.close(fig)
 
     @torch.no_grad()
-    def outlier_detection(self, in_loader, out_loader, in_patches, out_patches):
+    def outlier_detection(self, in_loader, out_loader, in_patches, out_patches, display=True):
 
         in_scores = []
         out_scores = []
+        machine = []
 
         for x, _, _ in tqdm(in_loader, desc="In-distribution"):
             x = self.preprocess(x)
@@ -806,34 +807,50 @@ class Glow(nn.Module):
             losses = compute_loss(nll, reduction="none")
             in_scores.extend(losses["nll"].detach().cpu().numpy())
 
-        for x, _, _ in tqdm(out_loader, desc="Out-of-distribution"):
+        for x, _, info in tqdm(out_loader, desc="Out-of-distribution"):
             x = self.preprocess(x)
             x = x.to(self.device)
             z, nll, y_logits = self.forward(x, None)
             losses = compute_loss(nll, reduction="none")
             out_scores.extend(losses["nll"].detach().cpu().numpy())
+            machine.append(info[:][0])
         
         # get auc
         in_scores = np.array(in_scores)
         in_scores = [in_scores[i*in_patches:(i+1)*in_patches].mean() for i in range(len(in_scores)//in_patches)]
+        # if a value is nan or inf, replace it with 100
+        in_scores = [100 if np.isnan(i) or np.isinf(i) else i for i in in_scores]
         out_scores = np.array(out_scores)
         out_scores = [out_scores[i*out_patches:(i+1)*out_patches].mean() for i in range(len(out_scores)//out_patches)]
+        out_scores = [100 if np.isnan(i) or np.isinf(i) else i for i in out_scores]
         in_labels = np.zeros_like(in_scores)
         out_labels = np.ones_like(out_scores)
         scores = np.concatenate([in_scores, out_scores])
         labels = np.concatenate([in_labels, out_labels])
         auc = roc_auc_score(labels, scores)
+        machine = np.concatenate(machine)
+        machine = [machine[i*out_patches] for i in range(len(machine)//out_patches)]
+        fpr, tpr , _ = roc_curve(np.concatenate([np.zeros_like(in_scores), np.ones_like(out_scores)]), np.concatenate([in_scores, out_scores]))
+
+        fpr95 = fpr[np.argmax(tpr >= 0.95)]
+        # print mean scores per machine
+        for m in np.unique(machine):
+            print(f"Mean Scores {m}: {np.mean([out_scores[i] for i in range(len(out_scores)) if machine[i] == m]):.6f}")
         # print with 4 decimal places
-        print(f"AUC: {auc:.4f}")
+        print(f"AUC: {auc:.4f}, FPR95: {fpr95:.4f}")
+        print(f"Mean In-distribution Score: {np.mean(in_scores):.6f}, Mean Out-of-distribution Score: {np.mean(out_scores):.6f}")
         
-        # plot histograms of scores in same plot
-        plt.hist(in_scores, bins=100, alpha=0.5, label='In-distribution')
-        plt.hist(out_scores, bins=100, alpha=0.5, label='Out-of-distribution')
-        plt.legend(loc='upper right')
-        plt.xlabel('NLL')
-        plt.ylabel('Frequency')
-        plt.show()
-        return in_scores, out_scores
+        if display:
+            # plot histograms of scores in same plot
+            plt.hist(in_scores, bins=100, alpha=0.5, label='In-distribution')
+            plt.hist(out_scores, bins=100, alpha=0.5, label='Out-of-distribution')
+            plt.legend(loc='upper right')
+            plt.xlabel('NLL')
+            plt.ylabel('Frequency')
+            plt.show()
+        
+        else:
+            return auc, fpr95
     
     def load_checkpoint(self, args):
         if args.checkpoint is not None:

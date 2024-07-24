@@ -520,7 +520,7 @@ class AdverX(nn.Module):
 
         if display:
             # print discriminator metrics
-            print(f"Mean Scores: {np.mean(out_scores):.6f}, AUROC: {rocauc:.6f}, FPR95: {fpr95:.6f}")
+            print(f"Mean Scores OOD: {np.mean(out_scores):.6f}, AUROC: {rocauc:.6f}, FPR95: {fpr95:.6f}")
             print(f"Mean Scores ID: {np.mean(in_scores):.6f}")
             # plot the scores
             fig = plt.figure(figsize=(10, 5))
@@ -534,7 +534,7 @@ class AdverX(nn.Module):
             plt.show()
         
         else:
-            return in_scores, rocauc, np.mean(out_scores)
+            return rocauc, fpr95
         
 
 class MSSIM(nn.Module):
