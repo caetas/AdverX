@@ -437,7 +437,8 @@ class AdverX(nn.Module):
             if acc_g_loss/len(data_loader.dataset) < best_loss:
                 best_loss = acc_g_loss/len(data_loader.dataset)
                 torch.save(self.vae.state_dict(), os.path.join(models_dir, 'AdverX', f"AdvVAE_{self.in_machine}.pt"))
-                torch.save(self.discriminator.state_dict(), os.path.join(models_dir, 'AdverX', f"Discriminator_{self.in_machine}.pt"))
+                
+        torch.save(self.discriminator.state_dict(), os.path.join(models_dir, 'AdverX', f"Discriminator_{self.in_machine}.pt"))
 
     def ood_score(self, recon_x, x, mu, logvar):
         '''
