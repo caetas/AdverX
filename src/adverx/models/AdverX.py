@@ -13,6 +13,7 @@ import os
 from config import figures_dir, models_dir
 import wandb
 from sklearn.metrics import roc_auc_score, roc_curve
+from math import exp
 
 def create_checkpoint_dir():
   if not os.path.exists(models_dir):
@@ -437,7 +438,7 @@ class AdverX(nn.Module):
             if acc_g_loss/len(data_loader.dataset) < best_loss:
                 best_loss = acc_g_loss/len(data_loader.dataset)
                 torch.save(self.vae.state_dict(), os.path.join(models_dir, 'AdverX', f"AdvVAE_{self.in_machine}.pt"))
-                
+
         torch.save(self.discriminator.state_dict(), os.path.join(models_dir, 'AdverX', f"Discriminator_{self.in_machine}.pt"))
 
     def ood_score(self, recon_x, x, mu, logvar):

@@ -93,6 +93,50 @@ AdverX utilizes the **first iteration** of the BIMCV-COVID-19+ dataset, that can
     ```
 5. You can delete the original dataset folder in [`data/raw`](data/raw).
 
+## Train the Models
+
+Please run the following commands to train the models in a specific machine.
+
+### AdverX-Ray
+
+    python train.py --hidden_dims 64 128 256 512 512 --latent_dim 1024 --n_epochs 200 --lr 3e-4 --patches_image 32 --in_machine siemens
+    python train.py --hidden_dims 64 128 256 512 512 --latent_dim 1024 --n_epochs 200 --lr 3e-4 --patches_image 36 --in_machine konica
+    python train.py --hidden_dims 64 128 256 512 512 --latent_dim 1024 --n_epochs 200 --lr 3e-4 --patches_image 40 --in_machine philips
+    python train.py --hidden_dims 64 128 256 512 512 --latent_dim 1024 --n_epochs 200 --lr 3e-4 --patches_image 42 --in_machine gmm
+    python train.py --hidden_dims 64 128 256 512 512 --latent_dim 1024 --n_epochs 200 --lr 3e-4 --patches_image 42 --in_machine ge
+
+### GLOW
+
+    python train_GLOW.py --L 3 --K 32 --hidden_channels 512 --n_bits 16 --lr 1.5e-4 --n_epochs 100 --learn_top --patches_image 32 --in_machine siemens
+    python train_GLOW.py --L 3 --K 32 --hidden_channels 512 --n_bits 16 --lr 1.5e-4 --n_epochs 100 --learn_top --patches_image 36 --in_machine konica
+    python train_GLOW.py --L 3 --K 32 --hidden_channels 512 --n_bits 16 --lr 1.5e-4 --n_epochs 100 --learn_top --patches_image 40 --in_machine philips
+    python train_GLOW.py --L 3 --K 32 --hidden_channels 512 --n_bits 16 --lr 1.5e-4 --n_epochs 100 --learn_top --patches_image 42 --in_machine gmm
+    python train_GLOW.py --L 3 --K 32 --hidden_channels 512 --n_bits 16 --lr 1.5e-4 --n_epochs 100 --learn_top --patches_image 42 --in_machine ge
+
+### VAE
+
+    python train_VAE.py --hidden_dims 64 128 256 512 512 --latent_dim 1024 --n_epochs 200 --lr 3e-4 --patches_image 32 --in_machine siemens
+    python train_VAE.py --hidden_dims 64 128 256 512 512 --latent_dim 1024 --n_epochs 200 --lr 3e-4 --patches_image 36 --in_machine konica
+    python train_VAE.py --hidden_dims 64 128 256 512 512 --latent_dim 1024 --n_epochs 200 --lr 3e-4 --patches_image 40 --in_machine philips
+    python train_VAE.py --hidden_dims 64 128 256 512 512 --latent_dim 1024 --n_epochs 200 --lr 3e-4 --patches_image 42 --in_machine gmm
+    python train_VAE.py --hidden_dims 64 128 256 512 512 --latent_dim 1024 --n_epochs 200 --lr 3e-4 --patches_image 42 --in_machine ge
+
+## Evaluation
+
+We present an example for the Philips machine only, but the process is similar for other machines.
+
+### AdverX-Ray
+
+    python eval.py --hidden_dims 64 128 256 512 512 --latent_dim 1024 --in_machine philips --discriminator_checkpoint ./../../models/AdverX/Discriminator_philips.pt
+
+### GLOW
+
+    python eval_GLOW.py --L 3 --K 32 --hidden_channels 512 --n_bits 16 --in_machine philips --checkpoint ./../../models/Glow/Glow_32_3_512.pt
+
+### VAE
+
+    python eval_VAE.py --hidden_dims 64 128 256 512 512 --latent_dim 1024 --in_machine philips --checkpoint ./../../models/VAE/VAE_philips.pt
+
 ## Documentation
 
 Full documentation is available here: [`docs/`](docs).
