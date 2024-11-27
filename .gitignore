@@ -198,7 +198,7 @@ multirun
 *.flac
 *.acc
 *.wav
-
+*.ipynb
 # pyspark
 derby.log
 metastore_db

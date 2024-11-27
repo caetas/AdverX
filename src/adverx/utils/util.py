@@ -20,7 +20,7 @@ def parse_args_AdverX():
     argparser.add_argument('--in_machine', type=str, default='siemens', help='in-distribution machine', choices=['siemens', 'ge', 'philips', 'gmm', 'konica'])
     argparser.add_argument('--in_patches', type=int, default=4, help='number of patches per image for in-distribution evaluation')
     argparser.add_argument('--out_patches', type=int, default=4, help='number of patches per image for out-of-distribution evaluation')
-    argparser.add_argument('--eval_iters', type=int, default=10, help='number of evaluation iterations')
+    argparser.add_argument('--eval_iters', type=int, default=5, help='number of evaluation iterations')
     return argparser.parse_args()
 
 
@@ -41,7 +41,7 @@ def parse_args_VAE():
     argparser.add_argument('--in_machine', type=str, default='siemens', help='in-distribution machine', choices=['siemens', 'ge', 'philips', 'gmm', 'konica'])
     argparser.add_argument('--in_patches', type=int, default=4, help='number of patches per image for in-distribution evaluation')
     argparser.add_argument('--out_patches', type=int, default=4, help='number of patches per image for out-of-distribution evaluation')
-    argparser.add_argument('--eval_iters', type=int, default=10, help='number of evaluation iterations')
+    argparser.add_argument('--eval_iters', type=int, default=5, help='number of evaluation iterations')
     return argparser.parse_args()
 
 def parse_args_Glow():
@@ -70,7 +70,7 @@ def parse_args_Glow():
     argparser.add_argument('--in_machine', type=str, default='siemens', help='in-distribution machine', choices=['siemens', 'ge', 'philips', 'gmm', 'konica'])
     argparser.add_argument('--in_patches', type=int, default=4, help='number of patches per image for in-distribution evaluation')
     argparser.add_argument('--out_patches', type=int, default=4, help='number of patches per image for out-of-distribution evaluation')
-    argparser.add_argument('--eval_iters', type=int, default=10, help='number of evaluation iterations')
+    argparser.add_argument('--eval_iters', type=int, default=5, help='number of evaluation iterations')
     return argparser.parse_args()
 
 # EOF

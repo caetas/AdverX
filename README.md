@@ -9,7 +9,7 @@
 [![Hydra](https://img.shields.io/badge/Config-Hydra-89b8cd)](https://hydra.cc)
 [![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
 
-Official repository for AdverX.
+Official repository for AdverX-Ray.
 
 ## Prerequisites
 
@@ -54,8 +54,7 @@ You can setup the virtualenv by running the following commands:
     python -m venv .venv-dev
     .venv-dev/Scripts/Activate.ps1
     python -m pip install --upgrade pip setuptools
-    pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
-    python -m pip install -r requirements/requirements-win.txt
+    python -m pip install -r requirements/requirements.txt
 
 
 To run the code please remember to always activate both environments:
@@ -161,17 +160,9 @@ for more information.
 
 ## License
 
-This project is licensed under the terms of the `No license` license.
+This project is licensed under the terms of the `CC-BY-4.0` license.
 See [LICENSE](LICENSE) for more details.
 
 ## Citation
 
-If you publish work that uses AdverX, please cite AdverX as follows:
-
-```bibtex
-@misc{AdverX,
-  author = {TUe},
-  title = {Official repository for AdverX.},
-  year = {2024},
-}
-```
+**This field will be added soon.**
