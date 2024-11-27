@@ -3,7 +3,7 @@
 default_context:
   project_name: "AdverX"
   repo_name: "AdverX"
-  description: "Official repository for AdverX."
+  description: "Official repository for AdverX-Ray."
   organization: "TUe"
   license: "No license"
   organization_email: "none@none.pt"

@@ -3,6 +3,7 @@
 # $ pip3 freeze > requirements/requirements.txt
 # or alternatively
 # make update-requirements
+--extra-index-url https://download.pytorch.org/whl/cu121
 boto3
 loguru
 numpy

@@ -800,14 +800,14 @@ class Glow(nn.Module):
         out_scores = []
         machine = []
 
-        for x, _, _ in tqdm(in_loader, desc="In-distribution"):
+        for x, _, _ in tqdm(in_loader, desc="In-distribution", leave=False):
             x = self.preprocess(x)
             x = x.to(self.device)
             z, nll, y_logits = self.forward(x, None)
             losses = compute_loss(nll, reduction="none")
             in_scores.extend(losses["nll"].detach().cpu().numpy())
 
-        for x, _, info in tqdm(out_loader, desc="Out-of-distribution"):
+        for x, _, info in tqdm(out_loader, desc="Out-of-distribution", leave=False):
             x = self.preprocess(x)
             x = x.to(self.device)
             z, nll, y_logits = self.forward(x, None)
@@ -838,8 +838,6 @@ class Glow(nn.Module):
             continue
             print(f"Mean Scores {m}: {np.mean([out_scores[i] for i in range(len(out_scores)) if machine[i] == m]):.6f}")
         # print with 4 decimal places
-        print(f"AUC: {auc:.4f}, FPR95: {fpr95:.4f}")
-        print(f"Mean In-distribution Score: {np.mean(in_scores):.6f}, Mean Out-of-distribution Score: {np.mean(out_scores):.6f}")
         
         if display:
             # plot histograms of scores in same plot
@@ -849,6 +847,9 @@ class Glow(nn.Module):
             plt.xlabel('NLL')
             plt.ylabel('Frequency')
             plt.show()
+
+            print(f"AUC: {auc:.4f}, FPR95: {fpr95:.4f}")
+            print(f"Mean In-distribution Score: {np.mean(in_scores):.6f}, Mean Out-of-distribution Score: {np.mean(out_scores):.6f}")
         
         else:
             return auc, fpr95
