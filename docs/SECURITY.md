@@ -27,7 +27,7 @@ This project is under active development, and we do our best to support the late
 
 | Version | Supported          |
 | ------- | ------------------ |
-| latest  |                    |
+| latest  |   1.0.0            |
 
 ## Reporting a Vulnerability or Security Issues
 
@@ -37,7 +37,7 @@ This project is under active development, and we do our best to support the late
 
 Vulnerabilities can be reported by emailing core members:
 
-- TUe \[none@none.pt\](mailto:none@none.pt)
+- Francisco Caetano \[f.t.de.espirito.santo.e.caetano@tue.nl\](mailto:f.t.de.espirito.santo.e.caetano@tue.nl)
 
 Please include the requested information listed below (as much as you can provide) to help us better understand the
 nature and scope of the possible issue:

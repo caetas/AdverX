@@ -122,7 +122,7 @@ data/interim/*
 data/external/*
 data/raw/*
 # models directory
-/models/
+/models/*
 # test data directory
 test/data
 
