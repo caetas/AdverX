@@ -13,7 +13,7 @@
   <img src="imgs/AdverXRay.png" width="100%" alt='Tasti Project'>
 </p>
 
-Official repository for AdverX-Ray.
+Official repository for AdverX-Ray, powered by the [`GenerativeZoo`](https://github.com/caetas/GenerativeZoo).
 
 **This work is part of the Xecs TASTI project, nr. 2022005.**
 
@@ -149,19 +149,6 @@ We present an example for the Philips machine only, but the process is similar f
 ## Documentation
 
 Full documentation is available here: [`docs/`](docs).
-
-## Dev
-
-See the [Developer](docs/DEVELOPER.md) guidelines for more information.
-
-## Contributing
-
-Contributions of any kind are welcome. Please read [CONTRIBUTING.md](docs/CONTRIBUTING.md]) for details and
-the process for submitting pull requests to us.
-
-## Changelog
-
-See the [Changelog](CHANGELOG.md) for more information.
 
 ## Security
 
