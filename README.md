@@ -92,6 +92,10 @@ AdverX utilizes the **first iteration** of the BIMCV-COVID-19+ dataset, that can
     ```
 5. You can delete the original dataset folder in [`data/raw`](data/raw).
 
+## Pretrained Checkpoints
+
+The checkpoints can be downloaded [`here`](https://drive.google.com/file/d/1twFwFQFayQvZdbPwLYDDA1zPWyW0Ww0g/view?usp=sharing) and should be unzipped and moved to [`models`](./models/).
+
 ## Train the Models
 
 Please run the following commands to train the models in a specific machine.
