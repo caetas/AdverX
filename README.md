@@ -1,5 +1,3 @@
-# AdverX-Ray
-
 [![Python](https://img.shields.io/badge/python-3.10+-informational.svg)](https://www.python.org/downloads/release/python-31014/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=black)](https://pycqa.github.io/isort)
@@ -9,7 +7,15 @@
 [![Hydra](https://img.shields.io/badge/Config-Hydra-89b8cd)](https://hydra.cc)
 [![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
 
+# AdverX-Ray
+
+<p align="center">
+  <img src="imgs/AdverXRay.png" width="100%" alt='Tasti Project'>
+</p>
+
 Official repository for AdverX-Ray.
+
+**This work is part of the Xecs TASTI project, nr. 2022005.**
 
 ## Prerequisites
 
